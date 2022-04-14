@@ -9,7 +9,7 @@ App for manager task of work for team. How to [working]():
 
 **group [working]()**
 - Add user on group [Status]()
-- Remore user of group [Status]()
+- Remove user of group [Status]()
 
 ---
 

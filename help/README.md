@@ -10,20 +10,20 @@ App for manager task of work for team. How to [working]():
 
 **Netgroup**
 - Add user on netgroup
-- Remore user of netgroup
+- Remove user of netgroup
 - Add host on netgroup
 - Remove host of netgroup
 
 **Group**
 - Add user on group
-- Remore user of group
+- Remove user of group
 - Add host on group
 - Remove host of group
 
 
 ## CENTOS 7.9
 
-Plane migration for rhel 8.5.
+Migration plan for rhel 8.5.
 
 ## RED HAT 8.5
 

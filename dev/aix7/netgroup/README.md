@@ -9,7 +9,7 @@ App for manager task of work for team. How to [working]():
 
 **Netgroup [working]()**
 - Add user on netgroup [Status]()
-- Remore user of netgroup [Status]()
+- Remove user of netgroup [Status]()
 - Add host on netgroup [Status]()
 - Remove host of netgroup [Status]()
 
