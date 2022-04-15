@@ -9,12 +9,15 @@
 #  
 #  ============================== Header ==============================  #
 
+source treinalinuxReadId.sh 
+
 function treinalinuxCreate() {
+    treinalinuxReadId
     name="$1"
     register="$2"
-    my_list="$3"
+    result=$(cat Files/resultado.txt)
 
-    for user_host in $my_list
+    for user_host in ${result}
     do
         echo "Criado o netgroup $name com o chamado $register e adicionado $user_host"
     done
