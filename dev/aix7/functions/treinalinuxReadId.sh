@@ -18,5 +18,3 @@ function treinalinuxReadId() {
     list_id=$(grep -f "$my_list" "$result" | cut -d":" -f 1 | xargs)
     echo "$list_id"
 }
-
-treinalinuxReadId
