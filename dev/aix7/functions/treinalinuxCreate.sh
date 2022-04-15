@@ -22,5 +22,3 @@ function treinalinuxCreate() {
         echo "Criado o netgroup $name com o chamado $register e adicionado $user_host"
     done
 }
-
-treinalinuxCreate ntxpto S000011-T900004
