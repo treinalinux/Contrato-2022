@@ -24,5 +24,3 @@ function treinalinuxSearchEngine() {
         echo "Sem resultados para sua busca no arquivo $my_file"
     fi
 }
-
-treinalinuxSearchEngine
