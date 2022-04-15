@@ -16,5 +16,5 @@ function treinalinuxReadId() {
     result=Files/resultado.txt
     my_list=Files/my_list.txt
     list_id=$(grep -f "$my_list" "$result" | cut -d":" -f 1 | xargs)
-    echo "$list_id"
+    echo "$list_id" > "$result"
 }
