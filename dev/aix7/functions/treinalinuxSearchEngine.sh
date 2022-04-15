@@ -19,8 +19,10 @@ function treinalinuxSearchEngine() {
     my_find=$(grep -f "$my_list" "$my_file" > "$my_result")
 
     if [[ -s "$my_result" ]]; then
-        cat "$my_result"
+        echo "Sucesso"
     else
         echo "Sem resultados para sua busca no arquivo $my_file"
     fi
 }
+
+treinalinuxSearchEngine
