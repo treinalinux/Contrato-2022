@@ -1,7 +1,7 @@
 #!/bin/bash
 #  ============================== Header ==============================  #
 #  
-#  Name...............: colorSchema
+#  Name...............: treinalinuxColorSchema
 #  Version............: 0.1
 #  Description........: Color schema of use on apps
 #  Date...............: 04/14/2022
@@ -9,7 +9,7 @@
 #  
 #  ============================== Header ==============================  #
 
-function colorSchema () {
+function treinalinuxColorSchema() {
     ATTENTION='\033[1;93m'
     INFORMATION='\033[95m'
     SUCCESS='\033[92m'
