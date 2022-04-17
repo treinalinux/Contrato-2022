@@ -3,13 +3,15 @@
 #  
 #  Name...............: treinalinuxColorSchema
 #  Version............: 0.1
-#  Description........: Color schema of use on apps
+#  Description........: Color schema of use on apps of terminal
 #  Date...............: 04/14/2022
 #  Update at..........: 04/17/2022
 #                        - for and case for select color 
 #  Create.............: Alan da Silva Alves
 #  
-#  ============================== Header ==============================  #
+#  ==============================        ==============================  #
+#  ============================== USAGE  ==============================  #
+#  ==============================        ==============================  #
 
 USAGE='
 
@@ -27,12 +29,17 @@ echo " Is my text out of color?"
 echo "${DANGER}Is my text red?${CLEAN}"
 '
 
+#  =============================          =============================  #
+#  ============================= FUNCTION =============================  #
+#  =============================          =============================  #
+
 function treinalinuxColorSchema() {
     ATTENTION='\033[1;93m'
     INFORMATION='\033[95m'
     SUCCESS='\033[92m'
     DANGER='\033[1;31m'
     CLEAN='\033[0m'
+
     for cor in ATTENTION INFORMATION SUCCESS DANGER USAGE
     do
         case $1 in
