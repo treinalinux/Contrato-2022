@@ -9,15 +9,17 @@
 #                        - called color schema added
 #  Create.............: Alan da Silva Alves
 #  
-#  ============================== Header ==============================  #
+#  ==========================================================================  #
+#  ========================= Modules and Variables ==========================  #
 
-# Load the function:
 source treinalinuxColorSchema.sh
 
-# Declare variables
 SUCCESS=$(treinalinuxColorSchema SUCCESS)
 INFORMATION=$(treinalinuxColorSchema INFORMATION)
 CLEAN=$(treinalinuxColorSchema CLEAN)
+
+#  ==========================================================================  #
+#  ================================= FUNCTION ===============================  #
 
 function treinalinuxAppendFile() {
     path_of_file_main="$1"
