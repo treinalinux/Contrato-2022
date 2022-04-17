@@ -15,16 +15,20 @@
 
 USAGE='
 
+#!/bin/bash
+
 # Load the function:
 source treinalinuxColorSchema.sh
 
 # Declare variables
 SUCCESS=$(treinalinuxColorSchema SUCCESS)
 DANGER=$(treinalinuxColorSchema DANGER)
+INFORMATION=$(treinalinuxColorSchema INFORMATION)
 CLEAN=$(treinalinuxColorSchema CLEAN)
 
 # Use the variables
 echo "${SUCCESS}Is my text green?${CLEAN} No color"
+echo "${INFORMATION}!! Is my text cyan? !! ${CLEAN} No color"
 echo " Is my text out of color?"
 echo "${DANGER}Is my text red?${CLEAN}"
 '
@@ -35,7 +39,7 @@ echo "${DANGER}Is my text red?${CLEAN}"
 
 function treinalinuxColorSchema() {
     ATTENTION='\033[1;93m'
-    INFORMATION='\033[95m'
+    INFORMATION='\033[1;4;36;107m'
     SUCCESS='\033[92m'
     DANGER='\033[1;31m'
     CLEAN='\033[0m'
