@@ -7,6 +7,14 @@
 #  Date...............: 04/18/2022
 #  Create.............: Alan da Silva Alves
 #  
+#  ==========================================================================  #
+#  ========================= Modules and Variables ==========================  #
+
+source treinalinuxColorSchema.sh
+
+ATTENTION=$(treinalinuxColorSchema ATTENTION)
+CLEAN=$(treinalinuxColorSchema CLEAN)
+
 #  =========================================================================  #
 #  ================================= USAGE =================================  #
 
@@ -40,7 +48,7 @@ treinalinuxConvertToUsage
 
 
 function treinalinuxConvertToUsage() {
-    echo "$USAGE"
+    echo "${ATTENTION}${USAGE} ${CLEAN}"
 }
 
 function treinalinuxConvertToUpperCase() {
