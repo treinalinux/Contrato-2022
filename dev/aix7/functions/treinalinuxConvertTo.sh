@@ -14,18 +14,34 @@ USAGE='
 
 #!/bin/bash
 
-# Load the function:
+# Load the functions:
 source treinalinuxConvertTo.sh
 
+# USAGE:
 
-treinalinuxConvertToUpperCase "Alan da Silva Alves"
-treinalinuxConvertToLowerCase "Alan da Silva Alves"
+# Convert to text for uppercase
+treinalinuxConvertToUpperCase "alan da silva alves"
+
+# Convert to text for lowercasee
+treinalinuxConvertToLowerCase "ALAN DA SILVA ALVES"
+
+# Convert to file for uppercase
 treinalinuxConvertToFile UP Files/my_list.txt
+
+# Convert to text for lowercasee
 treinalinuxConvertToFile LOW Files/my_list.txt
+
+# Call this is help
+treinalinuxConvertToUsage
 '
 
 #  =========================================================================  #
 #  =============================== FUNCTIONS ===============================  #
+
+
+function treinalinuxConvertToUsage() {
+    echo "$USAGE"
+}
 
 function treinalinuxConvertToUpperCase() {
     UPPERCASE=$(echo "$1" | tr '[:lower:]' '[:upper:]')
