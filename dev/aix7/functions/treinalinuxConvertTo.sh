@@ -17,30 +17,37 @@ USAGE='
 # Load the function:
 source treinalinuxConvertTo.sh
 
-treinalinuxConvertTo UP Alan
-treinalinuxConvertTo LOW ALAN
+
+treinalinuxConvertToUpperCase "Alan da Silva Alves"
+treinalinuxConvertToLowerCase "Alan da Silva Alves"
+treinalinuxConvertToFile UP Files/my_list.txt
+treinalinuxConvertToFile LOW Files/my_list.txt
 '
 
 #  =========================================================================  #
-#  =============================== FUNCTION ================================  #
+#  =============================== FUNCTIONS ===============================  #
 
-function treinalinuxConvertTo() {
-    UPPERCASE=$(echo $2 | tr '[:lower:]' '[:upper:]')
-    LOWERCASE=$(echo "$2" | tr '[:upper:]' '[:lower:]')
-    
-    case $1 in
-       UP )
-           echo "$UPPERCASE"
-           ;;
-       LOW )
-           echo "$LOWERCASE"
-           ;;
-       USAGE)
-           echo "$USAGE"
-           ;;
-       *)
-           echo "How to: USAGE"
-   esac
+function treinalinuxConvertToUpperCase() {
+    UPPERCASE=$(echo "$1" | tr '[:lower:]' '[:upper:]')
+    echo "$UPPERCASE"
 }
 
-# treinalinuxConvertTo UP 'Alan da Silva Alves'
+
+function treinalinuxConvertToLowerCase() {
+    LOWERCASE=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+    echo "$LOWERCASE"
+}
+
+
+function treinalinuxConvertToFile() {
+    while read line
+    do
+        if [[ "$1" = 'UP' ]]
+        then
+            echo "$line" | tr '[:lower:]' '[:upper:]'
+        elif [[ "$1" = 'LOW' ]]
+        then
+            echo "$line" | tr '[:upper:]' '[:lower:]'
+        fi
+    done < <(cat "$2")
+}
