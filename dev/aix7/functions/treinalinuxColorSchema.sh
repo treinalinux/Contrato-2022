@@ -42,31 +42,28 @@ function treinalinuxColorSchema() {
     DANGER='\033[1;31m'
     CLEAN='\033[0m'
 
-    for cor in ATTENTION INFORMATION SUCCESS DANGER USAGE
-    do
-        case $1 in
-            ATTENTION )
-                echo -e "$ATTENTION $2"
-                break
-                ;;
-            INFORMATION )
-                echo -e "$INFORMATION $2"
-                break
-                ;;
-            SUCCESS )
-                echo -e "$SUCCESS $2"
-                break
-                ;;
-            DANGER)
-                echo -e "$DANGER $2"
-                break
-                ;;
-            USAGE)
-                echo "$USAGE"
-                break
-                ;;
-            *)
-                echo -en "$CLEAN"
-        esac
-    done
+   case $1 in
+       ATTENTION )
+           echo -e "$ATTENTION $2"
+           exit 0
+           ;;
+       INFORMATION )
+           echo -e "$INFORMATION $2"
+           exit 0
+           ;;
+       SUCCESS )
+           echo -e "$SUCCESS $2"
+           exit 0
+           ;;
+       DANGER)
+           echo -e "$DANGER $2"
+           exit 0
+           ;;
+       USAGE)
+           echo "$USAGE"
+           exit 0
+           ;;
+       *)
+           echo -en "$CLEAN"
+   esac
 }
