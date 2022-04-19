@@ -63,7 +63,7 @@ function treinalinuxRR() {
     while read name
     do
         count=$((count+1))
-        echo "${count}) Resposta para ${name}: ${ATTENTION} "
+        echo "${count}) Resposta para ${name} do tipo ${type}: ${ATTENTION} "
         resp=$(dig @8.8.8.8 ${name} +noall +answer +noclass +ttlunits -t ${type} +short)
         content=$(echo "$resp" | sed s/\"/\|/g | xargs | sed s/\|/\"/g)
         tee -a ${rel} <<< "$name;$type;$content"
@@ -92,7 +92,7 @@ function treinalinuxDS() {
     while read name
     do
         count=$((count+1))
-        echo "${count}) Resposta para ${name}:${ATTENTION} "
+        echo "${count}) Resposta para ${name}: ${ATTENTION} "
         content=$(dig @8.8.8.8 ${name} DS +qr +short | xargs)
         tee -a ${rel} <<< "$name;$type;$content"
         echo "${CLEAN}"
