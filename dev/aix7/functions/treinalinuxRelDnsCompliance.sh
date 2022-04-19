@@ -54,7 +54,8 @@ function treinalinuxRR() {
     Consultando entradas de registros
     "
     names='Files/domains.txt'
-    create_rel=$(echo "Name;Type" > 'Files/rel_rr.csv')
+    type='TXT'
+    create_rel=$(echo "Name;Type;Content" > 'Files/rel_rr.csv')
     rel='Files/rel_rr.csv'
 
     count=0
@@ -63,8 +64,9 @@ function treinalinuxRR() {
     do
         count=$((count+1))
         echo "${count}) Resposta para ${name}: ${ATTENTION} "
-        resp=$(dig @8.8.8.8 +short ${name} | xargs)
-        tee -a ${rel} <<< "$name;$resp"
+        resp=$(dig @8.8.8.8 ${name} +noall +answer +noclass +ttlunits -t ${type} +short)
+        content=$(echo "$resp" | sed s/\"/\|/g | xargs | sed s/\|/\"/g)
+        tee -a ${rel} <<< "$name;$type;$content"
         echo "${CLEAN}"
     done < $names
 
@@ -91,8 +93,8 @@ function treinalinuxDS() {
     do
         count=$((count+1))
         echo "${count}) Resposta para ${name}:${ATTENTION} "
-        resp=$(dig @8.8.8.8 ${name} DS +qr +short | xargs)
-        tee -a ${rel} <<< "$name;$resp"
+        content=$(dig @8.8.8.8 ${name} DS +qr +short | xargs)
+        tee -a ${rel} <<< "$name;$type;$content"
         echo "${CLEAN}"
     done < $names
 
@@ -105,4 +107,4 @@ function treinalinuxDS() {
 # treinalinuxWhois
 treinalinuxInputs
 treinalinuxRR
-treinalinuxDS
+# treinalinuxDS
