@@ -2,7 +2,7 @@
 #  ================================= Header =================================  #
 #  
 #  Name...............: treinalinuxRelDnsCompliance
-#  Version............: 0.1
+#  Version............: 0.2
 #  Description........: Append data any in files
 #  Date...............: 04/19/2022
 #  Create.............: Alan da Silva Alves
@@ -54,8 +54,8 @@ function treinalinuxRR() {
     Consultando entradas de registros
     "
     names='Files/domains.txt'
-    type='TXT'
-    create_rel=$(echo "Name;Type;Content" > 'Files/rel_rr.csv')
+    type='ANY'
+    create_rel=$(echo "RECORD;TTL;TYPE;CONTENT" > 'Files/rel_rr.csv')
     rel='Files/rel_rr.csv'
 
     count=0
@@ -64,9 +64,8 @@ function treinalinuxRR() {
     do
         count=$((count+1))
         echo "${count}) Resposta para ${name} do tipo ${type}: ${ATTENTION} "
-        resp=$(dig @8.8.8.8 ${name} +noall +answer +noclass +ttlunits -t ${type} +short)
-        content=$(echo "$resp" | sed s/\"/\|/g | xargs | sed s/\|/\"/g)
-        tee -a ${rel} <<< "$name;$type;$content"
+        resp=$(dig @8.8.8.8 ${name} +noall +answer +noclass +ttlunits -t ${type} | sed 's/\t\t/\t/g' | sed 's/\t/;/g')
+        tee -a ${rel} <<< "$resp"
         echo "${CLEAN}"
     done < $names
 
