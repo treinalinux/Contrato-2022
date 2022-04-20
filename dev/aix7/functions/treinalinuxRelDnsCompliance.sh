@@ -53,9 +53,10 @@ function treinalinuxRR() {
     echo "
     Consultando entradas de registros
     "
+    log_date=$(date +'%^A %d de %^B de %Y %T %Z')
     names='Files/domains.txt'
     type='ANY'
-    create_rel=$(echo "RECORD;TTL;TYPE;CONTENT" > 'Files/rel_rr.csv')
+    create_rel=$(echo "REGISTRO;TTL;TIPO;VALOR;DATA: ${log_date}" > 'Files/rel_rr.csv')
     rel='Files/rel_rr.csv'
 
     count=0
