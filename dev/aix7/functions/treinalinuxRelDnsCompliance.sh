@@ -3,7 +3,7 @@
 #  
 #  Name...............: treinalinuxRelDnsCompliance
 #  Version............: 0.2
-#  Description........: Append data any in files
+#  Description........: Report DNS compliance sla
 #  Date...............: 04/19/2022
 #  Create.............: Alan da Silva Alves
 #  
