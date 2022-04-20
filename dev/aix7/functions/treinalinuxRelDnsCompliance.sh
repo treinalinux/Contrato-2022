@@ -2,9 +2,13 @@
 #  ================================= Header =================================  #
 #  
 #  Name...............: treinalinuxRelDnsCompliance
-#  Version............: 0.2
+#  Version............: 0.3
 #  Description........: Report DNS compliance sla
 #  Date...............: 04/19/2022
+#  Update.............: 04/20/2022
+#                       - Remove empty lines
+#                       - Change RR
+#                       - Change DS
 #  Create.............: Alan da Silva Alves
 #  
 #  ==========================================================================  #
@@ -24,6 +28,8 @@ function treinalinuxInputs() {
     echo ""
     read -p "[Enter] Informe as entradas que deseja consultar: " nada
     vim Files/domains.txt
+    read -p "[Enter] Informe as zonas que deseja consultar: " nada
+    vim Files/zones.txt
 }
 
 function treinalinuxWhois() {
@@ -56,8 +62,8 @@ function treinalinuxRR() {
     log_date=$(date +'%^A %d de %^B de %Y %T %Z')
     names='Files/domains.txt'
     type='ANY'
-    create_rel=$(echo "REGISTRO;TTL;TIPO;VALOR;DATA: ${log_date}" > 'Files/rel_rr.csv')
-    rel='Files/rel_rr.csv'
+    create_rel=$(echo "REGISTRO;TTL;TIPO;VALOR;DATA: ${log_date}" > 'Files/rel_all.csv')
+    rel='Files/rel_all.csv'
 
     count=0
 
@@ -69,7 +75,8 @@ function treinalinuxRR() {
         tee -a ${rel} <<< "$resp"
         echo "${CLEAN}"
     done < $names
-
+    
+    sed -i '/^$/d' ${rel}
     echo "
     ${INFORMATION}[Registros] Total de entradas consultadas:${CLEAN}${SUCCESS}${count}${CLEAN}
     "
@@ -83,21 +90,22 @@ function treinalinuxDS() {
     echo "
     Consultando entradas DS
     "
-    names='Files/domains.txt'
-    create_rel=$(echo "Name;Type" > 'Files/rel_ds.csv')
-    rel='Files/rel_ds.csv'
+    type='DS'
+    names='Files/zones.txt'
+    rel='Files/rel_all.csv'
 
     count=0
 
     while read name
     do
         count=$((count+1))
-        echo "${count}) Resposta para ${name}: ${ATTENTION} "
-        content=$(dig @8.8.8.8 ${name} DS +qr +short | xargs)
-        tee -a ${rel} <<< "$name;$type;$content"
+        echo "${count}) Resposta para ${name} do tipo: ${ATTENTION} "
+        resp=$(dig @8.8.8.8 ${name} +noall +answer +noclass +ttlunits -t ${type} +qr | sed 's/\t\t/\t/g' | sed 's/\t/;/g')
+        tee -a ${rel} <<< "$resp"
         echo "${CLEAN}"
     done < $names
 
+    sed -i '/^$/d' ${rel}
     echo "
     ${INFORMATION}[DNSSEC] Total de entradas consultadas:${CLEAN}${SUCCESS}${count}${CLEAN}
     "
@@ -107,4 +115,4 @@ function treinalinuxDS() {
 # treinalinuxWhois
 treinalinuxInputs
 treinalinuxRR
-# treinalinuxDS
+treinalinuxDS
