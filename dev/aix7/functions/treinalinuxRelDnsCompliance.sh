@@ -2,13 +2,15 @@
 #  ================================= Header =================================  #
 #  
 #  Name...............: treinalinuxRelDnsCompliance
-#  Version............: 0.4
+#  Version............: 0.5
 #  Description........: Report DNS compliance sla
 #  Date...............: 04/19/2022
 #  Update.............: 04/20/2022
 #                       - Remove empty lines
 #                       - Change RR
 #                       - Change DS
+#  Refactoring........: 04/22/2022
+#                       - Refactoring functions clean
 #  Create.............: Alan da Silva Alves
 #  
 #  ==========================================================================  #
@@ -25,6 +27,9 @@ CLEAN=$(treinalinuxColorSchema CLEAN)
 #  ================================= FUNCTIONS ==============================  #
 
 function treinalinuxInputs() {
+    log_date=$(date +'%^A %d de %^B de %Y %T %Z')
+    create_rel=$(echo "REGISTRO;TTL;TIPO;VALOR;DATA: ${log_date}" > 'Files/rel_all.csv')
+
     echo ""
     if [[ "$1" = "all" ]]
     then
@@ -34,8 +39,8 @@ function treinalinuxInputs() {
         vim Files/zones.txt
 
         treinalinuxWhois
-        treinalinuxRR
-        treinalinuxDS
+        treinalinuxRefactor "ANY"
+        treinalinuxRefactor "DS"
     elif [[ "$1" = "rd" ]]
     then
         read -p "[Enter] Informe as entradas que deseja consultar: " nada
@@ -43,8 +48,8 @@ function treinalinuxInputs() {
         read -p "[Enter] Informe as zonas que deseja consultar: " nada
         vim Files/zones.txt
 
-        treinalinuxRR
-        treinalinuxDS
+        treinalinuxRefactor "ANY"
+        treinalinuxRefactor "DS"
     elif [[ "$1" = "wo" ]]
     then
         read -p "[Enter] Informe as zonas que deseja consultar: " nada
@@ -55,9 +60,6 @@ function treinalinuxInputs() {
 }
 
 function treinalinuxWhois() {
-    echo "
-    Consultando entradas whois
-    "
     names='Files/zones.txt'
     rel='Files/rel_whois.txt'
 
@@ -75,17 +77,19 @@ function treinalinuxWhois() {
     "
 }
 
-# Verificação de Registros DNS
 
-function treinalinuxRR() {
-    echo "
-    Consultando entradas de registros
-    "
-    log_date=$(date +'%^A %d de %^B de %Y %T %Z')
-    names='Files/domains.txt'
-    type='ANY'
-    create_rel=$(echo "REGISTRO;TTL;TIPO;VALOR;DATA: ${log_date}" > 'Files/rel_all.csv')
+function treinalinuxRefactor() {
+    type="$1"
+    if [[ ${type} =  'ANY' ]]
+    then
+       names='Files/domains.txt'
+   elif [[ ${type} =  'DS' ]]
+   then
+       names='Files/zones.txt'
+    fi
+
     rel='Files/rel_all.csv'
+    nameserver='@8.8.8.8'
 
     count=0
 
@@ -93,46 +97,30 @@ function treinalinuxRR() {
     do
         count=$((count+1))
         echo "${count}) Resposta para ${name} do tipo ${type}: ${ATTENTION} "
-        resp=$(dig @8.8.8.8 ${name} +noall +answer +noclass +ttlunits -t ${type} | sed 's/\t\t/\t/g' | sed 's/\t/;/g')
-        tee -a ${rel} <<< "$resp"
-        echo "${CLEAN}"
-    done < $names
-    
-    sed -i '/^$/d' ${rel}
-    echo "
-    ${INFORMATION}[Registros] Total de entradas consultadas:${CLEAN}${SUCCESS}${count}${CLEAN}
-    "
-}
-
-
-# [X] Verificação de DS
-# [ ] Consulta registros DNSKEY de um domínio e retorna os respectivos registros DS.
-
-function treinalinuxDS() {
-    echo "
-    Consultando entradas DS
-    "
-    type='DS'
-    names='Files/zones.txt'
-    rel='Files/rel_all.csv'
-
-    count=0
-
-    while read name
-    do
-        count=$((count+1))
-        echo "${count}) Resposta para ${name} do tipo: ${ATTENTION} "
-        resp=$(dig @8.8.8.8 ${name} +noall +answer +noclass +ttlunits -t ${type} +qr | sed 's/\t\t/\t/g' | sed 's/\t/;/g')
+        if [[ ${type} =  'DS' ]]; then
+            resp=$(treinalinuxTypeDS ${nameserver} ${name} ${type})
+        elif [[ ${type} =  'ANY' ]]; then
+            resp=$(treinalinuxTypeRr ${nameserver} ${name} ${type})
+        fi
         tee -a ${rel} <<< "$resp"
         echo "${CLEAN}"
     done < $names
 
     sed -i '/^$/d' ${rel}
     echo "
-    ${INFORMATION}[DNSSEC] Total de entradas consultadas:${CLEAN}${SUCCESS}${count}${CLEAN}
+    ${INFORMATION}[${type}] Total de entradas consultadas:${CLEAN}${SUCCESS}${count}${CLEAN}
     "
 }
 
+
+function treinalinuxTypeRr() {
+    dig ${1} ${2} +noall +answer +noclass +ttlunits -t ${3} | sed 's/\t\t/\t/g' | sed 's/\t/;/g'
+}
+
+
+function treinalinuxTypeDS() {
+    dig ${1} ${2} +noall +answer +noclass +ttlunits -t ${3} +qr | sed 's/\t\t/\t/g' | sed 's/\t/;/g'
+}
 
 # treinalinuxInputs 'all'
 treinalinuxInputs 'rd'
