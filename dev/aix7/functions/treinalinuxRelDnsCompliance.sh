@@ -2,7 +2,7 @@
 #  ================================= Header =================================  #
 #  
 #  Name...............: treinalinuxRelDnsCompliance
-#  Version............: 0.3
+#  Version............: 0.4
 #  Description........: Report DNS compliance sla
 #  Date...............: 04/19/2022
 #  Update.............: 04/20/2022
@@ -26,17 +26,39 @@ CLEAN=$(treinalinuxColorSchema CLEAN)
 
 function treinalinuxInputs() {
     echo ""
-    read -p "[Enter] Informe as entradas que deseja consultar: " nada
-    vim Files/domains.txt
-    read -p "[Enter] Informe as zonas que deseja consultar: " nada
-    vim Files/zones.txt
+    if [[ "$1" = "all" ]]
+    then
+        read -p "[Enter] Informe as entradas que deseja consultar: " nada
+        vim Files/domains.txt
+        read -p "[Enter] Informe as zonas que deseja consultar: " nada
+        vim Files/zones.txt
+
+        treinalinuxWhois
+        treinalinuxRR
+        treinalinuxDS
+    elif [[ "$1" = "rd" ]]
+    then
+        read -p "[Enter] Informe as entradas que deseja consultar: " nada
+        vim Files/domains.txt
+        read -p "[Enter] Informe as zonas que deseja consultar: " nada
+        vim Files/zones.txt
+
+        treinalinuxRR
+        treinalinuxDS
+    elif [[ "$1" = "wo" ]]
+    then
+        read -p "[Enter] Informe as zonas que deseja consultar: " nada
+        vim Files/zones.txt
+
+        treinalinuxWhois
+    fi
 }
 
 function treinalinuxWhois() {
     echo "
     Consultando entradas whois
     "
-    names='Files/domains.txt'
+    names='Files/zones.txt'
     rel='Files/rel_whois.txt'
 
     count=0
@@ -45,7 +67,7 @@ function treinalinuxWhois() {
     do
         count=$((count+1))
         echo "${count}) Resposta para ${name}:${ATTENTION} "
-        whois ${name} >> ${rel}
+        whois -H ${name} >> ${rel}
     done < $names
 
     echo "
@@ -112,7 +134,6 @@ function treinalinuxDS() {
 }
 
 
-# treinalinuxWhois
-treinalinuxInputs
-treinalinuxRR
-treinalinuxDS
+# treinalinuxInputs 'all'
+treinalinuxInputs 'rd'
+# treinalinuxInputs 'wo'
