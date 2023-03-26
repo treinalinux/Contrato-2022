@@ -3,8 +3,8 @@
 # Name.......: Chroot automation
 # Create.....: Alan da Silva Alves
 # Create at..: 03/25/2023
-# Description: Create Enable or Show a chroot with overlay
-# Version....: 0.2
+# Description: Create or Enable chroot
+# Version....: 0.3
 #
 #
 ################################################################################
@@ -34,7 +34,8 @@ HELP="
 
 name_chroot=${1}
 action_chroot=${2}
-
+account_system_maps="your_account_system_maps"
+path_tools_of_teams="root/tools/teams"
 
 ################################################################################
 # Definition of functions
@@ -43,19 +44,23 @@ action_chroot=${2}
 
 function create_chroot() {
 	mkdir -vp ${PWD}/{workdir,merged_etc}
-	create_chroot=$(yum --releasever=/ --installroot=/${name_chroot} install autofs sudo ksh zsh httpd -y)
+	install_chroot=$(yum --releasever=/ --installroot=/${name_chroot} install ypbind rpcbind oddjob-mkhomedir autofs sudo ksh zsh httpd -y)
 	mkdir -vp /${name_chroot}/dev/pts
+	mkdir -vp /${name_chroot}/home/${account_system_maps}
+	mkdir -vp /${name_chroot}/${path_tools_of_teams}
 }
 
 function mount_chroot() {
 	mount -v -t proc proc /${name_chroot}/proc/
 	mount -v -t sysfs sys /${name_chroot}/sys/
-	mount -o bind /dev/pts /${name_chroot}/dev/pts
+	mount -v -o bind /dev/pts /${name_chroot}/dev/pts
 	mount -v -o bind /dev/null /${name_chroot}/dev/null
+	mount -v -o bind /home/${account_system_maps} /${name_chroot}/home/${account_system_maps}
+	mount -v -o bind /${path_tools_of_teams} /${name_chroot}/${path_tools_of_teams}
 }
 
-# layer for write chroot
 function mount_overlay() {
+	# customize your etc_template folder with the files and services you need enable
 	t_overlay=$(mount -v -t overlay overlay -olowerdir=etc_template,upperdir=/etc/rw_src,workdir=workdir merged_etc)
 	mount -v -o bind ${PWD}/merged_etc /${name_chroot}/etc
 }
