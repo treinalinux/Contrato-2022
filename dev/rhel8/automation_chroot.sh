@@ -4,7 +4,7 @@
 # Create.....: Alan da Silva Alves
 # Create at..: 03/25/2023
 # Description: Create or Enable chroot
-# Version....: 0.3
+# Version....: 0.4
 #
 #
 ################################################################################
@@ -19,6 +19,7 @@ HELP="
 
  	create or -c 	for create NEW croot environment
  	enable or -e 	for loader chroot already existing
+ 	install or -i 	for install new packages on chroot already existing
 	show or -s	for show mount overlay of chroot 
 
 	Example:
@@ -29,6 +30,12 @@ HELP="
 	- loader chroot already existing:
 	# automation_chroot_overlay NAME_YOUR_CHROOT_ALREADY_EXISTING enable
 
+	- install packages on chroot already existing:
+	# automation_chroot_overlay NAME_YOUR_CHROOT_ALREADY_EXISTING install
+	# Which packages do you want to install in the chroot NAME_YOUR_CHROOT_ALREADY_EXISTING? write list packages  (Ex. ypbind rpcbind oddjob-mkhomedir autofs sudo ksh zsh httpd)
+
+	- show chroot already existing:
+	# automation_chroot_overlay NAME_YOUR_CHROOT_ALREADY_EXISTING show
 
 "
 
@@ -42,9 +49,14 @@ path_tools_of_teams="root/tools/teams"
 ################################################################################
 
 
+function install_pkg_chroot() {
+	read -p "Which packages do you want to install in the chroot ${name_chroot}? " packages
+	yum --releasever=/ --installroot=/${name_chroot} install -y $packages
+}
+
 function create_chroot() {
 	mkdir -vp ${PWD}/{workdir,merged_etc}
-	install_chroot=$(yum --releasever=/ --installroot=/${name_chroot} install ypbind rpcbind oddjob-mkhomedir autofs sudo ksh zsh httpd -y)
+	install_pkg_chroot
 	mkdir -vp /${name_chroot}/dev/pts
 	mkdir -vp /${name_chroot}/home/${account_system_maps}
 	mkdir -vp /${name_chroot}/${path_tools_of_teams}
@@ -60,7 +72,6 @@ function mount_chroot() {
 }
 
 function mount_overlay() {
-	# customize your etc_template folder with the files and services you need enable
 	t_overlay=$(mount -v -t overlay overlay -olowerdir=etc_template,upperdir=/etc/rw_src,workdir=workdir merged_etc)
 	mount -v -o bind ${PWD}/merged_etc /${name_chroot}/etc
 }
@@ -90,6 +101,8 @@ elif [[ ${action_chroot} == "enable" ]] || [[ ${action_chroot} == "-e" ]] ; then
 	mount_chroot
 	mount_overlay
 	show_overlay
+elif [[ ${action_chroot} == "install" ]] || [[ ${action_chroot} == "-i" ]] ; then
+	install_pkg_chroot
 elif [[ ${action_chroot} == "show" ]] || [[ ${action_chroot} == "-s" ]] ; then
 	show_overlay
 else
