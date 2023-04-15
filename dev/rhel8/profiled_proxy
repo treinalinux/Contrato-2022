@@ -51,6 +51,5 @@ if [[ -d ${dir_data} ]] && [[ ${group_proxy} == ${group_control} ]]; then
 elif  [[ ! -d ${dir_data} ]] && [[ ${group_proxy} == ${group_control} ]]; then
     create_envproxy
 else
-    echo "$USER, você não pertence ao group!"
-    exit 1
+    echo "${HOSTNAME} é administrado por ${group_control}"
 fi
