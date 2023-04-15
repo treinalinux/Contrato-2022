@@ -1,0 +1,56 @@
+#!/bin/bash
+# 
+# Create by.....: Alan da Silva Alves
+# Create at.....: 04/15/2023
+# Name..........: profiled_proxy
+# Description...: Create or set proxy environment for users of a group
+# Version.......: 0.1
+# 
+# .............................................................................
+# Vars
+# .............................................................................
+ 
+ip_proxy='192.168.0.200'
+port_proxy='3128'
+group_control='devops'
+group_proxy=$(id $USER |grep -o ${group_control})
+dir_data='./dados'
+
+# .............................................................................
+# Functions
+# .............................................................................
+
+# set environment for users of a group
+function set_useproxy() {
+    user_proxy=$(cat ${dir_data}/usuario_proxy)
+    password_proxy=$(cat ${dir_data}/senha_proxy)
+    export HTTPS_PROXY="http://$user_proxy:$password_proxy@${ip_proxy}:${port_proxy}"
+    export HTTP_PROXY="http://$user_proxy:$password_proxy@${ip_proxy}:${port_proxy}"
+    echo "$USER, seu proxy foi definido com sucesso!"
+    echo ${HTTPS_PROXY}
+    echo ${HTTP_PROXY}
+}
+
+# create environment for users of a group
+function create_envproxy() {
+    mkdir --mode=700 --verbose ${dir_data}
+    touch ${dir_data}/senha_proxy ${dir_data}/usuario_proxy
+    chmod 600 -v ${dir_data}/*
+    echo "$USER, você precisa informar nos arquivos abaixo os dados de usuário e senha para o proxy!"
+    ls ${dir_data}
+    echo "Após informar os dados, você deve recarregar a sessão!"
+}
+
+# .............................................................................
+# Main Execution
+# .............................................................................
+
+# test if dir exists and group proxy is equal group control for set or create environment for users of a group
+if [[ -d ${dir_data} ]] && [[ ${group_proxy} == ${group_control} ]]; then
+    set_useproxy
+elif  [[ ! -d ${dir_data} ]] && [[ ${group_proxy} == ${group_control} ]]; then
+    create_envproxy
+else
+    echo "$USER, você não pertence ao group!"
+    exit 1
+fi
