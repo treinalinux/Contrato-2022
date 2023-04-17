@@ -5,51 +5,82 @@
 # Name..........: profiled_proxy
 # Description...: Create or set proxy environment for users of a group
 # Version.......: 0.1
+# Update at.....: 04/17/2023
+# Updates.......: 0.2
+# ..............: created new functions: create_data, config_bashrc_proxy and help_proxy
 # 
 # .............................................................................
-# Vars
+# Vars of profiled_proxy
 # .............................................................................
  
+
 ip_proxy='192.168.0.200'
 port_proxy='3128'
 group_control='devops'
 group_proxy=$(id $USER |grep -o ${group_control})
-dir_data='./dados'
+dir_data='.dados_proxy'
+load_proxy="alias carregar_proxy='bash /etc/profile.d/profiled_proxy.sh; bash'"
 
 # .............................................................................
-# Functions
+# Functions of profiled_proxy
 # .............................................................................
 
 # set environment for users of a group
 function set_useproxy() {
     user_proxy=$(cat ${dir_data}/usuario_proxy)
-    password_proxy=$(cat ${dir_data}/senha_proxy)
+    password_proxy=$(ansible-vault view ${dir_data}/senha_proxy | tail -1)
     export HTTPS_PROXY="http://$user_proxy:$password_proxy@${ip_proxy}:${port_proxy}"
-    export HTTP_PROXY="http://$user_proxy:$password_proxy@${ip_proxy}:${port_proxy}"
+    # only https, but case need you http can uncomment
+    #export HTTP_PROXY="http://$user_proxy:$password_proxy@${ip_proxy}:${port_proxy}"
     echo "$USER, seu proxy foi definido com sucesso!"
-    echo ${HTTPS_PROXY}
-    echo ${HTTP_PROXY}
+}
+
+# create aliases of use proxy
+function config_bashrc_proxy() {
+    echo ${load_proxy} >> ~/.bashrc
+    echo "alias alterar_senha_proxy='ansible-vault edit ${dir_data}/senha_proxy; carregar_proxy'" >> ~/.bashrc
+    echo "alias ver_senha_proxy='ansible-vault view ${dir_data}/senha_proxy'" >> ~/.bashrc
+    source .bashrc
+}
+
+# create dir and files of use proxy
+function create_data() {
+    mkdir --mode=700 ${dir_data}
+    touch ${dir_data}/senha_proxy ${dir_data}/usuario_proxy
+    chmod 600 ${dir_data}/*
+}
+
+# guide basic how to set proxy
+function help_proxy() {
+    echo -e "\n$USER, você precisa informar nos arquivos abaixo os dados de usuário e senha para o proxy!"
+    ls --format=single-column ${dir_data}/*
+    echo -e "\nDica! use os comandos abaixo para alterar usuário e senha:\n"
+    echo -e "1)\techo NOME_USUARIO_PROXY > ${dir_data}/usuario_proxy"
+    echo -e "\n2)\talterar_senha_proxy\n\nNÃO EDITAR MANUALMENTE O ARQUIVO DE SENHAS!"
+
+    echo -e "\nPara verificar a senha use o comando:\n\tver_senha_proxy\n"
+
+    echo "Para validar se consegue usar o proxy teste a API do Let's Encrypt:"
+    echo -e "\tcurl https://acme-v02.api.letsencrypt.org/directory\n"
 }
 
 # create environment for users of a group
 function create_envproxy() {
-    mkdir --mode=700 --verbose ${dir_data}
-    touch ${dir_data}/senha_proxy ${dir_data}/usuario_proxy
-    chmod 600 -v ${dir_data}/*
-    echo "$USER, você precisa informar nos arquivos abaixo os dados de usuário e senha para o proxy!"
-    ls ${dir_data}
-    echo "Após informar os dados, você deve recarregar a sessão!"
+    create_data
+    echo "$USER, informe uma senha para proteger o arquivo de senhas e no arquivo coloque sua senha de rede:"
+    password_proxy=$(ansible-vault encrypt ${dir_data}/senha_proxy)
+    config_bashrc_proxy
+    help_proxy
 }
 
 # .............................................................................
-# Main Execution
+# Main Execution of profiled_proxy
 # .............................................................................
 
-# test if dir exists and group proxy is equal group control for set or create environment for users of a group
 if [[ -d ${dir_data} ]] && [[ ${group_proxy} == ${group_control} ]]; then
     set_useproxy
 elif  [[ ! -d ${dir_data} ]] && [[ ${group_proxy} == ${group_control} ]]; then
     create_envproxy
 else
-    echo "${HOSTNAME} é administrado por ${group_control}"
+    echo "${HOSTNAME} é um servidor administrador por ${group_control}"
 fi
